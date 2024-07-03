@@ -5,6 +5,7 @@ This module contains the filter_datum funtion.
 import logging
 import re
 from typing import List
+import sys
 
 
 def filter_datum(fields: List[str], redaction: str,
@@ -32,3 +33,19 @@ class RedactingFormatter(logging.Formatter):
         """Filters values in incoming log records using filter_datum."""
         mes = super().format(record)
         return filter_datum(self.fields, self.REDACTION, mes, self.SEPARATOR)
+
+
+def get_logger() -> logging.Logger:
+    """Returns a logging.Logger object."""
+    logger = logging.getLogger("user_data")
+    handler_name = logging.StreamHandler()
+    formater = RedactingFormatter(list(PII_FIELDS))
+
+    handler_name.setLevel(logging.INFO)
+    handler_name.setFormatter(formater)
+
+    logger.addHandler(handler_name)
+    return logger
+
+
+PII_FIELDS = ("ssn", "password", "ip", "email", "phone")
