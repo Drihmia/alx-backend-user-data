@@ -5,7 +5,7 @@ This module contains the filter_datum funtion.
 import logging
 import re
 import os
-from typing import List
+from typing import List, Union
 import sys
 import mysql.connector
 
@@ -59,7 +59,7 @@ PII_FIELDS = ("ssn", "password", "name", "email", "phone")
 
 
 # Task 3
-def get_db():
+def get_db() -> object:
     mysql.connector.pooling.PooledMySQLConnection
     """Returns a connector to a MySQL database."""
 
