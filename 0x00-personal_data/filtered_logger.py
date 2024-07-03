@@ -59,7 +59,7 @@ PII_FIELDS = ("ssn", "password", "name", "email", "phone")
 
 
 # Task 3
-def get_db() -> object:
+def get_db() -> mysql.connector.connection.MySQLConnection:
     mysql.connector.pooling.PooledMySQLConnection
     """Returns a connector to a MySQL database."""
 
