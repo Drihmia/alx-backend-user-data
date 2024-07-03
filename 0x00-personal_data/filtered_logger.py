@@ -60,21 +60,44 @@ PII_FIELDS = ("ssn", "password", "name", "email", "phone")
 
 # Task 3
 def get_db() -> mysql.connector.connection.MySQLConnection:
-    mysql.connector.pooling.PooledMySQLConnection
     """Returns a connector to a MySQL database."""
 
-    PERSONAL_DATA_DB_USERNAME = os.getenv("PERSONAL_DATA_DB_USERNAME")
-    PERSONAL_DATA_DB_PASSWORD = os.getenv("PERSONAL_DATA_DB_PASSWORD")
-    PERSONAL_DATA_DB_HOST = os.getenv("PERSONAL_DATA_DB_HOST")
-    PERSONAL_DATA_DB_NAME = os.getenv("PERSONAL_DATA_DB_NAME")
+    USERNAME = os.getenv("PERSONAL_DATA_DB_USERNAME")
+    PASSWORD = os.getenv("PERSONAL_DATA_DB_PASSWORD")
+    HOST = os.getenv("PERSONAL_DATA_DB_HOST")
+    NAME = os.getenv("PERSONAL_DATA_DB_NAME")
 
-    try:
-        connection = mysql.connector.connect(
-            host=PERSONAL_DATA_DB_HOST,
-            user=PERSONAL_DATA_DB_USERNAME,
-            password=PERSONAL_DATA_DB_PASSWORD,
-            database=PERSONAL_DATA_DB_NAME)
-    except Exception:
-        return None
+    connection = mysql.connector.connect(
+        host=HOST,
+        user=USERNAME,
+        password=PASSWORD,
+        database=NAME)
 
     return connection
+
+
+# Task4
+def main():
+    """ Main function. """
+    logger = get_logger()
+    db = get_db()
+
+    cursor = db.cursor()
+    cursor.execute("describe users;")
+    headers = [i[0] for i in cursor if i]
+    cursor.close()
+
+    cursor = db.cursor()
+    cursor.execute("SELECT * FROM users;")
+    for row in cursor.fetchall():
+        message = ''
+        for i in range(len(headers)):
+            message += f"{headers[i]}={row[i]};"
+        logger.info(message)
+
+    cursor.close()
+    db.close()
+
+
+if __name__ == "__main__":
+    main()
