@@ -4,7 +4,7 @@ This module contains the filter_datum funtion.
 """
 import logging
 import re
-import os
+from os import getenv
 from typing import List, Union
 import sys
 import mysql.connector
@@ -62,16 +62,16 @@ PII_FIELDS = ("ssn", "password", "name", "email", "phone")
 def get_db() -> mysql.connector.connection.MySQLConnection:
     """Returns a connector to a MySQL database."""
 
-    USERNAME = os.getenv("PERSONAL_DATA_DB_USERNAME")
-    PASSWORD = os.getenv("PERSONAL_DATA_DB_PASSWORD")
-    HOST = os.getenv("PERSONAL_DATA_DB_HOST")
-    NAME = os.getenv("PERSONAL_DATA_DB_NAME")
+    USERNAME = getenv("PERSONAL_DATA_DB_USERNAME", "root")
+    PASSWORD = getenv("PERSONAL_DATA_DB_PASSWORD", "")
+    HOST = getenv("PERSONAL_DATA_DB_HOST", "localhost")
+    DB_NAME = getenv("PERSONAL_DATA_DB_NAME")
 
     connection = mysql.connector.connect(
         host=HOST,
         user=USERNAME,
         password=PASSWORD,
-        database=NAME)
+        database=DB_NAME)
 
     return connection
 
