@@ -7,8 +7,10 @@ import bcrypt
 def hash_password(password: str) -> bytes:
     """ Hash a password for the first time """
 
+    # Generate a salt: a random sequence of bytes
     salt = bcrypt.gensalt()
 
+    # Hash the password with the salt
     hashed_password = bcrypt.hashpw(
         password.encode(),
         salt)
@@ -20,6 +22,8 @@ def hash_password(password: str) -> bytes:
 def is_valid(hashed_password: bytes, password: str) -> bool:
     """ Check if the password is valid """
 
+    # Check if the password is valid, return True if it is_valid
+    # otherwise return False
     return bcrypt.checkpw(
         password.encode(),
         hashed_password)
