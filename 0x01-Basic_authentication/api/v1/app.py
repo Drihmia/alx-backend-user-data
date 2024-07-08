@@ -75,9 +75,5 @@ def filter():
 
 if __name__ == "__main__":
     host = getenv("API_HOST", "0.0.0.0")
-    try:
-        port_str = getenv("API_PORT", "5000")
-        port = int(port_str)
-    except ValueError:
-        port = 5000
+    port = getenv("API_PORT", "5000")
     app.run(host=host, port=port)
