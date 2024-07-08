@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python3
 """
 This module provides a simple authentication mechanism for the application.
 """
