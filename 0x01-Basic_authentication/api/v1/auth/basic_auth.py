@@ -88,7 +88,9 @@ class BasicAuth(Auth):
         return user
 
     def current_user(self, request=None) -> TypeVar('User'):
-        """ """
+        """ A method that overloads Auth and retrieves the User instance for
+        a request.
+        """
         auth_body = super().authorization_header(request)
 
         if not auth_body:
