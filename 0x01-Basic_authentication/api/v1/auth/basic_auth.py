@@ -80,12 +80,13 @@ class BasicAuth(Auth):
             return None
 
         user_list = User.search({"email": user_email})
+        user_list = list(filter(
+            lambda user: user.is_valid_password(user_pwd), user_list))
+
         if not len(user_list):
             return None
 
         user = user_list[0]
-        if not user.is_valid_password(user_pwd):
-            return None
         return user
 
     def current_user(self, request=None) -> TypeVar('User'):
