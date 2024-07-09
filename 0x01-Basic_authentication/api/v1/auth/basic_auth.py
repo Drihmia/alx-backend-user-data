@@ -79,8 +79,10 @@ class BasicAuth(Auth):
 
         if not user_pwd or type(user_pwd) is not str:
             return None
-
-        user_list = User.search({"email": user_email})
+        try:
+            user_list = User.search({"email": user_email})
+        except Exception as e:
+            return None
         user_list = list(filter(
             lambda user: user.is_valid_password(user_pwd), user_list))
 
