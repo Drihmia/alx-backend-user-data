@@ -21,6 +21,9 @@ if auth_env == "auth":
 elif auth_env == "basic_auth":
     from api.v1.auth.basic_auth import BasicAuth
     auth = BasicAuth()
+elif auth_env == "session_auth":
+    from api.v1.auth.session_auth import SessionAuth
+    auth = SessionAuth()
 
 
 @app.errorhandler(404)
@@ -56,7 +59,8 @@ def filter():
     exc_list = [
         '/api/v1/status/',
         '/api/v1/unauthorized/',
-        '/api/v1/forbidden/'
+        '/api/v1/forbidden/',
+        '/api/v1/auth_session/login/',
     ]
 
     path = str(request.path)
@@ -64,11 +68,13 @@ def filter():
     if not auth.require_auth(path, exc_list):
         return
 
-    if not auth.authorization_header(request):
+    if not auth.authorization_header(request) and \
+            not auth.session_cookie(request):
         abort(401)
 
     if not auth.current_user(request):
         abort(403)
+
     request.current_user = auth.current_user(request)
 
 
