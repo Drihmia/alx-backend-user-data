@@ -2,20 +2,22 @@
 """
 This module provides a class for managing session database authentication.
 """
-from .session_exp_auth import SessionExpAuth
-from models.user_session import UserSession
-from uuid import uuid4
 from os import getenv
+from uuid import uuid4
+from models.user_session import UserSession
+from .session_exp_auth import SessionExpAuth
 
 
 class SessionDBAuth(SessionExpAuth):
     """
     SessionDBAuth class.
     """
-    def create_session(self, user_id=None):
+
+    def create_session(self, user_id=None) -> str:
         """
         Creates a new session for a user.
         """
+
         if not user_id:
             return None
         if type(user_id) is not str:
@@ -29,10 +31,11 @@ class SessionDBAuth(SessionExpAuth):
         user_session.save()
         return session_id
 
-    def user_id_for_session_id(self, session_id=None):
+    def user_id_for_session_id(self, session_id=None) -> str:
         """
         Returns a User ID based on a Session ID.
         """
+
         super().user_id_for_session_id(session_id)
         if not session_id:
             return None
@@ -48,10 +51,11 @@ class SessionDBAuth(SessionExpAuth):
         user_id = user_session.user_id
         return user_id
 
-    def destroy_session(self, request=None):
+    def destroy_session(self, request=None) -> bool:
         """
         Destroys a session.
         """
+
         if not request:
             return None
 
