@@ -11,7 +11,10 @@ from models.user import User
 @app_views.route('/auth_session/login', methods=['POST'],
                  strict_slashes=False)
 def auth_session():
-    print("form data: ", request.form)
+    """
+    POST /auth_session/login
+    """
+
     email = request.form.get("email", "")
     password = request.form.get("password", "")
 
@@ -30,11 +33,11 @@ def auth_session():
     if not user.is_valid_password(password):
         return jsonify({"error": "wrong password"}), 401
 
-    resp = jsonify(user.to_json())
-
     from api.v1.app import auth
 
     session = auth.create_session(user.id)
+
+    resp = jsonify(user.to_json())
 
     session_name = getenv('SESSION_NAME')
     resp.set_cookie(session_name, session)

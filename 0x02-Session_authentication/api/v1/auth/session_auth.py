@@ -3,11 +3,12 @@
 from .auth import Auth
 from models.user import User
 import uuid
+from typing import TypeVar
 
 
 class SessionAuth(Auth):
     """ SessionAuth class that inherite from Auth class. """
-    user_id_by_session_id: dict[str, str] = {}
+    user_id_by_session_id = {}
 
     def create_session(self, user_id: str = None) -> str:
         """ A method that creates a session ID for user_id.
@@ -44,7 +45,7 @@ class SessionAuth(Auth):
 
         return self.user_id_by_session_id.get(session_id)
 
-    def current_user(self, request=None):
+    def current_user(self, request=None) -> TypeVar('User'):
         """ A method that returns a User instance based on a cookie value.
         Args:
             request (Request): A Request object.
