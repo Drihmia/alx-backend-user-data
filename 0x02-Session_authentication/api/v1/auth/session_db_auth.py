@@ -6,6 +6,8 @@ from os import getenv
 from uuid import uuid4
 from models.user_session import UserSession
 from .session_exp_auth import SessionExpAuth
+from typing import TypeVar
+from models.user import User
 
 
 class SessionDBAuth(SessionExpAuth):
@@ -78,3 +80,20 @@ class SessionDBAuth(SessionExpAuth):
         user_session.remove()
 
         return True
+
+    def current_user(self, request=None) -> TypeVar('User'):
+        """
+        Returns a User instance based on a cookie value.
+        """
+
+        if not request:
+            return None
+
+        session_id = self.session_cookie(request)
+
+        user_id = self.user_id_for_session_id(session_id)
+        if not user_id:
+            return None
+
+        user = User.get(user_id)
+        return user
