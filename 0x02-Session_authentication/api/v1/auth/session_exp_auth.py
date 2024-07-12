@@ -5,6 +5,7 @@ This module contains the SessionExpAuth class
 from .session_auth import SessionAuth
 from os import getenv
 from datetime import datetime, timedelta
+from models.user_session import UserSession
 
 
 class SessionExpAuth(SessionAuth):

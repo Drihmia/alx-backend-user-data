@@ -8,6 +8,7 @@ from models.user_session import UserSession
 from .session_exp_auth import SessionExpAuth
 from typing import TypeVar
 from models.user import User
+from datetime import datetime, timedelta
 
 
 class SessionDBAuth(SessionExpAuth):
@@ -35,20 +36,27 @@ class SessionDBAuth(SessionExpAuth):
 
     def user_id_for_session_id(self, session_id=None) -> str:
         """
-        Returns a User ID based on a Session ID.
+        Return the user_id by requesting it from the user_id_by_session_id
+        dictionary.
         """
-
-        super().user_id_for_session_id(session_id)
         if not session_id:
             return None
-        if type(session_id) is not str:
+
+        UserSession.load_from_file()
+
+        # Get session dictionary from user_id_by_session_id dictionary.
+        user_sessions = UserSession.search({"session_id": session_id})
+        if not user_sessions:
             return None
 
-        users_session = UserSession.search({"session_id": session_id})
-        if not users_session:
-            return None
+        user_session = user_sessions[0]
 
-        user_session = users_session[0]
+        if self.session_duration <= 0:
+            return user_session.user_id
+
+        if (user_session.created_at +
+                timedelta(seconds=self.session_duration) < datetime.utcnow()):
+            return None
 
         user_id = user_session.user_id
         return user_id
@@ -59,41 +67,17 @@ class SessionDBAuth(SessionExpAuth):
         """
 
         if not request:
-            return None
+            return False
 
-        session_name = getenv("SESSION_NAME")
-        cookies = request.cookies
-
-        session_id = cookies.get(session_name)
-
-        user_id = self.user_id_for_session_id(session_id)
-        if not user_id:
-            return None
-
-        user = UserSession.get(user_id)
+        session_id = self.session_cookie(request)
+        if not session_id:
+            return False
 
         users_session = UserSession.search({"session_id": session_id})
         if not users_session:
-            return None
+            return False
 
         user_session = users_session[0]
         user_session.remove()
 
         return True
-
-    def current_user(self, request=None) -> TypeVar('User'):
-        """
-        Returns a User instance based on a cookie value.
-        """
-
-        if not request:
-            return None
-
-        session_id = self.session_cookie(request)
-
-        user_id = self.user_id_for_session_id(session_id)
-        if not user_id:
-            return None
-
-        user = User.get(user_id)
-        return user
