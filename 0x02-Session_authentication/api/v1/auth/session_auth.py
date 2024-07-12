@@ -55,11 +55,12 @@ class SessionAuth(Auth):
             otherwise, return None.
         """
         session_id = self.session_cookie(request)
+        # print("session ID from session auth:\n", session_id)
 
         if not session_id:
             return None
 
-        user_id = self.user_id_by_session_id.get(session_id)
+        user_id = self.user_id_for_session_id(session_id)
 
         if not user_id:
             return None
