@@ -17,7 +17,7 @@ class SessionExpAuth(SessionAuth):
         except ValueError:
             self.session_duration = 0
 
-    def create_session(self, user_id=None):
+    def create_session(self, user_id=None) -> str:
         """
         Create a new session
         """
@@ -30,7 +30,7 @@ class SessionExpAuth(SessionAuth):
         self.user_id_by_session_id.update({session_id: session_dictionary})
         return session_id
 
-    def user_id_for_session_id(self, session_id=None):
+    def user_id_for_session_id(self, session_id=None) -> str:
         """
         Return the user_id by requesting it from the user_id_by_session_id
         dictionary.
@@ -50,8 +50,6 @@ class SessionExpAuth(SessionAuth):
 
         if "created_at" not in session_dictionary:
             return None
-        print(session_dictionary.get("created_at") +
-              timedelta(self.session_duration), datetime.now())
         if (session_dictionary.get("created_at") +
                 timedelta(seconds=self.session_duration) < datetime.now()):
             return None
