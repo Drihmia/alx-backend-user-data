@@ -43,7 +43,7 @@ class DB:
         self._session.commit()
         return user
 
-    def find_user_by(self, **kwargs: dict) -> User:
+    def find_user_by(self, **kwargs) -> User:
         """Find user instance by attribute given as keyword-arguments,
         from the first row in the users table satisfy kyargs given.
         """
@@ -74,7 +74,7 @@ class DB:
         if not user:
             raise NoResultFound("No user found")
 
-    def update_user(self, user_id: int, **kwargs: dict) -> None:
+    def update_user(self, user_id: int, **kwargs) -> None:
         """Update a user's instance
         """
         if not user_id:
