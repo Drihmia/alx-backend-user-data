@@ -36,8 +36,6 @@ class DB:
     def add_user(self, email, hashed_password) -> TypeVar('User'):
         """Create new User instance
         """
-        if not email or not hashed_password:
-            raise ValueError("email and hashed_password are required")
 
         user = User(email, hashed_password)
 
@@ -49,9 +47,6 @@ class DB:
         """Find user instance by attribute given as keyword-arguments,
         from the first row in the users table satisfy kyargs given.
         """
-
-        if not kwargs:
-            raise NoResultFound("kwargs are required")
 
         # Dynamically listing User's public attributes
         attributes = set(
