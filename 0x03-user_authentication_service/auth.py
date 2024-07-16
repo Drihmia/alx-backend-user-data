@@ -95,7 +95,7 @@ class Auth:
         except (InvalidRequestError, NoResultFound):
             return None
 
-    def destroy_session(self, user_id: int) -> None:
+    def destroy_session(self, user_id: int):
         """Destroy the session for the provided user ID.
         """
         self._db.update_user(user_id, session_id=None)
@@ -114,7 +114,7 @@ class Auth:
 
         return reset_token
 
-    def update_password(self, reset_token: str, password: str) -> None:
+    def update_password(self, reset_token: str, password: str):
         """Update the password for the provided reset token.
         """
         user = self._db.find_user_by(reset_token=reset_token)
