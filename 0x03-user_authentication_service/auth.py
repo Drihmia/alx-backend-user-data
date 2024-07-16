@@ -4,7 +4,6 @@
 """
 import bcrypt
 from db import DB
-from typing import TypeVar, Union
 from sqlalchemy.exc import InvalidRequestError
 from sqlalchemy.orm.exc import NoResultFound
 from uuid import uuid4
@@ -15,7 +14,7 @@ def _hash_password(password: str) -> bytes:
     """Return password hashed
     """
     if not password:
-        return None
+        return b''
     salt = bcrypt.gensalt()
     hashed_password = bcrypt.hashpw(password.encode(), salt)
     return hashed_password
@@ -77,6 +76,7 @@ class Auth:
                 session_id = _generate_uuid()
                 self._db.update_user(user.id, session_id=session_id)
                 return session_id
+            return None
 
         except (InvalidRequestError, NoResultFound):
             return None
