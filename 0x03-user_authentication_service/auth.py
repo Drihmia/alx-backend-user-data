@@ -21,12 +21,6 @@ def _hash_password(password: str) -> bytes:
     return hashed_password
 
 
-def _generate_uuid(self) -> str:
-    """Generate a new UUID.
-    """
-    return str(uuid4())
-
-
 class Auth:
     """Auth class to interact with the authentication database.
     """
@@ -65,6 +59,11 @@ class Auth:
         except (InvalidRequestError, NoResultFound):
             return False
 
+    def _generate_uuid(self) -> str:
+        """Generate a new UUID.
+        """
+        return str(uuid4())
+
     def create_session(self, email: str) -> str:
         """Create a new session for the provided email.
         """
@@ -98,4 +97,4 @@ class Auth:
     def destroy_session(self, user_id: int) -> None:
         """Destroy the session for the provided user ID.
         """
-        self._db.update_user(user_id: str, session_id: str=None)
+        self._db.update_user(user_id, session_id=None)
