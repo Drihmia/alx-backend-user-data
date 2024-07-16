@@ -17,7 +17,7 @@ def welcome():
     return jsonify({"message": "Bienvenue"})
 
 
-@app.route("/users", methods=["GET", "POST"], strict_slashes=False)
+@app.route("/users", methods=["POST"], strict_slashes=False)
 def users():
     """Register a user in database
     """
@@ -34,13 +34,14 @@ def users():
         return jsonify({"message": "email already registered"}), 400
 
 
-@app.route("/sessions", methods=["GET", "POST"], strict_slashes=False)
+@app.route("/sessions", methods=["POST"], strict_slashes=False)
 def login():
     """Login a user
     """
 
     email = request.form.get("email")
     password = request.form.get("password")
+    print(email, password)
 
     if not email or not password:
         abort(401)
@@ -72,6 +73,51 @@ def logout():
     # resp_red.set_cookie("session_id", "")
     resp_red.delete_cookie("session_id")
     return resp_red
+
+
+@app.route("/profile", methods=["GET"], strict_slashes=False)
+def profile():
+    """Get user profile
+    """
+    cookies = request.cookies
+    session_id = cookies.get("session_id")
+
+    if not session_id:
+        abort(403)
+
+    user = AUTH.get_user_from_session_id(session_id)
+    if not user:
+        abort(403)
+    return jsonify({"email": user.email}), 200
+
+
+@app.route("/reset_password", methods=["POST"], strict_slashes=False)
+def get_reset_password_token():
+    """Get reset password token
+    """
+    email = request.form.get("email")
+
+    try:
+        reset_token = AUTH.get_reset_password_token(email)
+    except ValueError:
+        abort(403)
+    return jsonify({"email": email, "reset_token": reset_token}), 200
+
+
+@app.route("/reset_password", methods=["PUT"], strict_slashes=False)
+def update_password():
+    """Update password
+    """
+    email = request.form.get("email")
+    reset_token = request.form.get("reset_token")
+    new_password = request.form.get("new_password")
+
+    try:
+        AUTH.update_password(reset_token, new_password)
+    except ValueError:
+        abort(403)
+
+    return jsonify({"email": email, "message": "Password updated"}), 200
 
 
 if __name__ == "__main__":
