@@ -126,3 +126,4 @@ class Auth:
             hashed_password=hashed_password,
             reset_token=None
         )
+        return None
