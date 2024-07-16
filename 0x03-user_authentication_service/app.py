@@ -41,7 +41,6 @@ def login():
 
     email = request.form.get("email")
     password = request.form.get("password")
-    print(email, password)
 
     if not email or not password:
         abort(401)
