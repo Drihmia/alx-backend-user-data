@@ -1,19 +1,17 @@
 #!/usr/bin/env python3
-"""DB module
+"""DB module to interact with the database
 """
 from sqlalchemy import create_engine
+from sqlalchemy.exc import InvalidRequestError
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.orm.session import Session
-from sqlalchemy.exc import InvalidRequestError
 from sqlalchemy.orm.exc import NoResultFound
-from typing import TypeVar
-
 from user import Base, User
 
 
 class DB:
-    """DB class
+    """DB class to interact with the database
     """
 
     def __init__(self) -> None:
@@ -33,9 +31,11 @@ class DB:
             self.__session = DBSession()
         return self.__session
 
-    def add_user(self, email, hashed_password) -> TypeVar('User'):
+    def add_user(self, email: str, hashed_password: str) -> User:
         """Create new User instance
         """
+        if not email or not hashed_password:
+            raise ValueError("email and hashed_password are required")
 
         user = User(email, hashed_password)
 
@@ -43,10 +43,13 @@ class DB:
         self._session.commit()
         return user
 
-    def find_user_by(self, **kwargs) -> TypeVar('User'):
+    def find_user_by(self, **kwargs: dict) -> User:
         """Find user instance by attribute given as keyword-arguments,
         from the first row in the users table satisfy kyargs given.
         """
+
+        if not kwargs:
+            raise NoResultFound("kwargs are required")
 
         # Dynamically listing User's public attributes
         attributes = set(
@@ -71,7 +74,7 @@ class DB:
         if not user:
             raise NoResultFound("No user found")
 
-    def update_user(self, user_id: int, **kwargs):
+    def update_user(self, user_id: int, **kwargs: dict) -> None:
         """Update a user's instance
         """
         if not user_id:

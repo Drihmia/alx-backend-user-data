@@ -8,12 +8,12 @@ Base = declarative_base()
 
 
 class User(Base):
-    """User class."""
+    """User class model."""
     __tablename__ = 'users'
 
     def __init__(self, email, hashed_password,
                  session_id=None, reset_token=None):
-        """Init method."""
+        """Initialize User class."""
         self.email = email
         self.hashed_password = hashed_password
         self.session_id = session_id
