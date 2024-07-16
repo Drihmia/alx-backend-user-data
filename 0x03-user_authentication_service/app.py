@@ -67,11 +67,10 @@ def logout():
     user = AUTH.get_user_from_session_id(session_id)
     if not user:
         abort(403)
-    print("user id:", user.id)
     AUTH.destroy_session(user.id)
     resp_red = redirect(url_for('welcome'))
-    resp_red.set_cookie("session_id", "")
-    # resp_red.delete_cookie("session_id")
+    # resp_red.set_cookie("session_id", "")
+    resp_red.delete_cookie("session_id")
     return resp_red
 
 
