@@ -6,7 +6,7 @@ import bcrypt
 from db import DB
 from sqlalchemy.exc import InvalidRequestError
 from sqlalchemy.orm.exc import NoResultFound
-from uuid import uuid4
+import uuid
 from user import User
 
 
@@ -23,7 +23,7 @@ def _hash_password(password: str) -> bytes:
 def _generate_uuid() -> str:
     """Generate a new UUID.
     """
-    return str(uuid4())
+    return str(uuid.uuid4())
 
 
 class Auth:
@@ -58,9 +58,7 @@ class Auth:
 
         try:
             user = self._db.find_user_by(email=email)
-            if user:
-                return bcrypt.checkpw(password.encode(), user.hashed_password)
-            return False
+            return bcrypt.checkpw(password.encode(), user.hashed_password)
         except (InvalidRequestError, NoResultFound):
             return False
 
@@ -72,11 +70,9 @@ class Auth:
 
         try:
             user = self._db.find_user_by(email=email)
-            if user:
-                session_id = _generate_uuid()
-                self._db.update_user(user.id, session_id=session_id)
-                return session_id
-            return None
+            session_id = _generate_uuid()
+            self._db.update_user(user.id, session_id=session_id)
+            return session_id
 
         except (InvalidRequestError, NoResultFound):
             return None
@@ -89,9 +85,7 @@ class Auth:
 
         try:
             user = self._db.find_user_by(session_id=session_id)
-            if user:
-                return user
-            return None
+            return user
         except (InvalidRequestError, NoResultFound):
             return None
 
@@ -106,24 +100,20 @@ class Auth:
         if not email:
             raise ValueError
 
-        user = self._db.find_user_by(email=email)
-        if not user:
+        try:
+            user = self._db.find_user_by(email=email)
+            reset_token = _generate_uuid()
+            self._db.update_user(user.id, reset_token=reset_token)
+            return reset_token
+        except (InvalidRequestError, NoResultFound):
             raise ValueError
-        reset_token = _generate_uuid()
-        self._db.update_user(user.id, reset_token=reset_token)
-
-        return reset_token
 
     def update_password(self, reset_token: str, password: str):
         """Update the password for the provided reset token.
         """
-        user = self._db.find_user_by(reset_token=reset_token)
-        if not user:
+        try:
+            user = self._db.find_user_by(reset_token=reset_token)
+            h_pwd = _hash_password(password)
+        except (InvalidRequestError, NoResultFound):
             raise ValueError
-        hashed_password = _hash_password(password)
-        self._db.update_user(
-            user.id,
-            hashed_password=hashed_password,
-            reset_token=None
-        )
-        return None
+        self._db.update_user(user.id, hashed_password=h_pwd, reset_token=None)

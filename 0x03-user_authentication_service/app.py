@@ -26,12 +26,10 @@ def users():
     password = request.form.get("password")
 
     try:
-        registred_user = AUTH.register_user(email, password)
-        return jsonify({
-            "email": registred_user.email,
-            "message": "user created"}), 200
+        rgsd_user = AUTH.register_user(email, password)
+        return jsonify({"email": rgsd_user.email, "message": "user created"})
     except ValueError:
-        return jsonify({"message": "email already registered"}), 400
+        return (jsonify({"message": "email already registered"}), 400)
 
 
 @app.route("/sessions", methods=["POST"], strict_slashes=False)
@@ -68,7 +66,7 @@ def logout():
     if not user:
         abort(403)
     AUTH.destroy_session(user.id)
-    resp_red = redirect(url_for('welcome'))
+    return redirect(url_for('welcome'))
     # resp_red.set_cookie("session_id", "")
     resp_red.delete_cookie("session_id")
     return resp_red
@@ -87,7 +85,7 @@ def profile():
     user = AUTH.get_user_from_session_id(session_id)
     if not user:
         abort(403)
-    return jsonify({"email": user.email}), 200
+    return jsonify({"email": user.email})
 
 
 @app.route("/reset_password", methods=["POST"], strict_slashes=False)
@@ -110,9 +108,6 @@ def update_password():
     email = request.form.get("email")
     reset_token = request.form.get("reset_token")
     new_password = request.form.get("new_password")
-
-    if not email or not reset_token or not new_password:
-        abort(403)
 
     try:
         AUTH.update_password(reset_token, new_password)
